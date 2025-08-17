@@ -2,15 +2,16 @@
 pragma solidity ^0.8.0;
 
 import "forge-std/Test.sol";
-import "../src/A23.sol";
+import "../src/FakeBurnToken.sol";
 
-contract A23Test is Test {
+contract FakeBurnTokenTest is Test {
     FakeBurnToken token;
-    address user = address(0x1);
+    address admin = address(0x1);
+    address user = address(0x2);
 
     function setUp() public {
         token = new FakeBurnToken();
-        vm.prank(token.owner());
+        vm.prank(admin);
         token.transfer(user, 1000e18);
     }
 
@@ -19,19 +20,28 @@ contract A23Test is Test {
         uint256 initialBalance = token.balanceOf(user);
         assertEq(initialBalance, 1000e18);
 
-        // 2. User attempts to burn 100 tokens with large decimals
+        // 2. User "burns" tokens with large decimals (causing overflow to 0)
         vm.prank(user);
         token.burnWithDecimals(100, 78); // 10^78 overflows to 0
 
-        // 3. Check results
-        assertEq(token.balanceOf(user), initialBalance); // No tokens burned!
-        assertEq(token.totalSupply(), 1000000 * 10**18); // Supply unchanged
+        // 3. Check results - no tokens actually burned
+        assertEq(token.balanceOf(user), initialBalance);
+        assertEq(token.totalSupply(), 1000000 * 10**18);
     }
 
     function testSafeBurn() public {
         // Normal burn works correctly
+        uint256 initialBalance = token.balanceOf(user);
         vm.prank(user);
         token.burnWithDecimals(100, 18); // Burns 100 tokens properly
-        assertEq(token.balanceOf(user), 900e18);
+        
+        assertEq(token.balanceOf(user), initialBalance - 100e18);
+    }
+
+    function testOverflowProtection() public {
+        // Should revert on overflow
+        vm.prank(user);
+        vm.expectRevert();
+        token.burnWithDecimals(1, 100); // Impossible exponent
     }
 }

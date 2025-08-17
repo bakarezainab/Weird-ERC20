@@ -1,4 +1,30 @@
-## Foundry
+## Weird ERC20 Explanation
+
+### For Weird Token A22
+
+#### A22. constructor-mistyping
+**Description**
+When declaring function constructors, one should write code like constructor(). However, some mistyped this declaration, using function constructor(), thus the Solidity compiler would view it as an average public function that anyone could access, not a constructor called just once when deploying.
+
+**Problematic Implementation**
+```solidity
+contract A{
+    function constructor() public{
+
+    }
+}
+```
+**Recommended Implementation**
+#### Change to constructor only without adding function
+```solidity
+contract A{
+    constructor() public{
+
+    }
+}
+```
+
+
 
 **Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
 

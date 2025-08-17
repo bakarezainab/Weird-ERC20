@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.30;
 
-contract WeirdTokenA11 {    
+contract WeirdTokenA11ToA16 {    
 
-    string public name = "WeirdTokenA11";
+    string public name = "WeirdToken";
     string public symbol = "WEIRD";
     uint8 public decimals = 18;
     uint256 public totalSupply;
@@ -61,6 +61,8 @@ contract WeirdTokenA11 {
         return _allowances[owner][spender];
     }
 
+    //..............................BEGINNING OF A11..................................................................
+
     // VULNERABLE: Anyone EXCEPT wallet can call these
     function enableTokenTransfer() external onlyFromWallet {
         tokenTransfer = true;
@@ -77,13 +79,7 @@ contract WeirdTokenA11 {
         unlockaddress[_addr] = _status;
     }
 
-    // Internal functions
-    function _mint(address account, uint256 amount) internal {
-        totalSupply += amount;
-        _balances[account] += amount;
-        emit Transfer(address(0), account, amount);
-    }
-
+    //...........................END OF A11..................................................................
     function _transfer(address from, address to, uint256 amount) internal {
         require(_balances[from] >= amount, "Insufficient balance");
         _balances[from] -= amount;
@@ -207,5 +203,12 @@ contract WeirdTokenA11 {
         uint256 currentAllowance = allowance(owner, spender);
         require(currentAllowance >= amount, "Insufficient allowance");
         _approve(owner, spender, currentAllowance - amount);
+    }
+
+    // Internal functions
+    function _mint(address account, uint256 amount) internal {
+        totalSupply += amount;
+        _balances[account] += amount;
+        emit Transfer(address(0), account, amount);
     }
 }

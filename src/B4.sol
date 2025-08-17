@@ -3,9 +3,12 @@ pragma solidity ^0.8.0;
 
 contract NoDecimalsToken {
     mapping(address => uint256) public balanceOf;
-    string public name = "NoDecimalsToken";
-    string public symbol = "NDT";
-    uint8 public DECIMALS = 18;  // Problem: Uppercase and no interface
+    // string public name = "NoDecimalsToken";
+    string public NAME; //........B5...........Problem: Uppercase and shadows parent
+    string public SYMBOL;  //..........B6.......Problem: Uppercase and shadows parent
+
+    // string public symbol = "NDT";
+    uint8 public DECIMALS = 18;  //.........B4........Problem: Uppercase and no interface
 
     event Transfer(address indexed from, address indexed to, uint256 value);
 
